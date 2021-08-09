@@ -60,10 +60,8 @@ int main(int argc, char** argv) {
     double* x  = malloc_host<double>(n);
 
     // compute kernel launch configuration
-    // auto block_dim = 128;
-    // auto grid_dim = (n+block_dim-1)/block_dim;
-    size_t grid_dim = ceil(n/_MAX_THREADS);
-    size_t block_dim= n/grid_dim; 
+    auto block_dim = 128;
+    auto grid_dim = (n+block_dim-1)/block_dim;
 
     auto time_h2d = -get_time();
     copy_to_device(xh, xd, n);
