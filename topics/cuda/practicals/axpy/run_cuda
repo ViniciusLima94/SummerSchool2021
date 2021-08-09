@@ -1,0 +1,16 @@
+memcopy and daxpy test of size 536870912
+-------
+timings
+-------
+H2D:  1.08669 s
+D2H:  0.409218 s
+axpy: 0.0231848 s
+
+total: 1.51909 s
+
+-------
+bandwidth
+-------
+H2D BW:  7904.69 MB/s
+D2H BW:  10495.5 MB/s
+passed with 0 errors
