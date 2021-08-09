@@ -1,27 +1,35 @@
 #include <iostream>
 
 #include <cuda.h>
+#include <math.h>
 
 #include "util.hpp"
+
+#define _MAX_THREADS 1024
 
 // TODO CUDA kernel implementing axpy
 //      y = y + alpha*x
 __global__
 void axpy(int n, double alpha, const double* x, double* y) {
     // Get thread id
-    auto i = threadIdx.x; 
+    auto i = threadIdx.x + blockDim.x*blockIdx.x; 
     // Check number of elements
     if (i<n) {
         // Perform operation
         y[i] = y[i] + alpha * x[i];
     }
-
 }
 
 int main(int argc, char** argv) {
     size_t pow = read_arg(argc, argv, 1, 16);
     size_t n = 1 << pow;
     auto size_in_bytes = n * sizeof(double);
+
+    // Get number of blocks based on the size of the array
+    // size_t block_size = 1024//512;
+    // Number of threads in each block
+    size_t num_blocks = ceil(n/_MAX_THREADS);//(n+(block_size-1))/ block_size;
+    size_t block_size = n/num_blocks;//512;
 
     cuInit(0);
 
@@ -48,7 +56,7 @@ int main(int argc, char** argv) {
 
     start = get_time();
     // TODO launch kernel (alpha=2.0)
-    axpy<<<1,n>>>(n,2.0,x_device,y_device);
+    axpy<<<num_blocks,block_size>>>(n,2.0,x_device,y_device);
 
     cudaDeviceSynchronize();
     auto time_axpy = get_time() - start;
