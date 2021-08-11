@@ -1,4 +1,4 @@
-CXX=g++
+CXX=gcc
 CUDA=nvcc
 CXXFLAGS=-O3 -fopenmp
 CUDAFLAGS=-O3 -std=c++11 -arch=sm_60
@@ -30,10 +30,10 @@ unit_tests.o: unit_tests.cu $(HEADERS)
 	$(CUDA) $(CUDAFLAGS) -c unit_tests.cu
 
 main: $(OBJ) main.o
-	$(CXX) $(CXXFLAGS) $(OBJ) main.o -o main -lcublas -lcudart
+	$(CXX) $(CXXFLAGS) $(OBJ) main.o -o main -lcublas -lcudart -lstdc++ -lm
 
 unit_tests: data.o linalg.o unit_tests.o
-	$(CXX) $(CXXFLAGS) unit_tests.o $(OBJ) -o unit_tests -lcublas -lcudart
+	$(CXX) $(CXXFLAGS) unit_tests.o $(OBJ) -o unit_tests -lcublas -lcudart -lstdc++ -lm
 #	srun ./unit_tests                       # run with interactive session
 #	srun -Cgpu ./unit_tests                 # run without interactive session
 
