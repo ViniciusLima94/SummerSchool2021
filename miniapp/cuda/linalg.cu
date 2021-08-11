@@ -39,6 +39,15 @@ void copy(double *y, const double* x, int n) {
         y[i] = x[i];
     }
 }
+
+__global__
+void fill(double *x, double value, int n) {
+    auto i = threadIdx.x + blockDim.x*blockIdx.x;
+    if(i < n) {
+        x[i] = value;
+    }
+}
+
 } // namespace kernels
 
 bool cg_initialized = false;
@@ -152,6 +161,10 @@ void ss_copy(Field& y, Field const& x)
 // value is a scalar
 void ss_fill(Field& x, const double value)
 {
+    const int n   = x.length();
+    auto grid_dim = calculate_grid_dim(block_dim, n);
+
+    kernels::fill<<<grid_dim,block_dim>>>(x.device_data(), value, n);
 }
 
 // computes y := alpha*x + y
