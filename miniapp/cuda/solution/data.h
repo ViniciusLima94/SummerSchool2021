@@ -115,13 +115,11 @@ class Field {
     /////////////////////////////////////////////////
     // TODO : implement the body of update_host() and update_device()
     void update_host() {
-        // TODO: copy contents of device_ptr_ to host_ptr_
-        cudaMemcpy(host_ptr_, device_ptr_, length()*sizeof(double), cudaMemcpyDeviceToHost);
+        cudaMemcpy(host_ptr_, device_ptr_, xdim_*ydim_*sizeof(double), cudaMemcpyDeviceToHost);
     }
 
     void update_device() {
-        // TODO: copy contents of host_ptr_ to device_ptr_ 
-        cudaMemcpy(device_ptr_, host_ptr_, length()*sizeof(double), cudaMemcpyHostToDevice);
+        cudaMemcpy(device_ptr_, host_ptr_, xdim_*ydim_*sizeof(double), cudaMemcpyHostToDevice);
     }
 
     private:

@@ -68,7 +68,6 @@ bool test_axpy() {
     auto n = 5;
     Field x(n,1);
     Field y(n,1);
-    std::cout << "done";
 
     for(auto i=0; i<n; ++i) {
         x[i] = 3.0;
@@ -79,8 +78,6 @@ bool test_axpy() {
 
     linalg::ss_axpy(y, 0.5, x);
     y.update_host();
-
-    for(int i=0; i<n; i++) std::cout << y[i] << " ,";
 
     bool status = true;
     for(auto i=0; i<n; ++i) {
