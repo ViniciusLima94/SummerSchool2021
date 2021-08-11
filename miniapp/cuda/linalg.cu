@@ -101,7 +101,7 @@ double ss_dot(Field const& x, Field const& y)
     double result = 0.;
     const int n = x.length();
 
-    cublasDdot(cublas_handle(), n, x, 1, y, 1, result);
+    cublasDdot(cublas_handle(), n, x.device_data(), 1, y.device_data(), 1, &result);
 
     return result;
 }
@@ -116,7 +116,7 @@ double ss_norm2(Field const& x)
     double result = 0;
     const int n = x.length();
 
-    cublasDnmr2(cublas_handle(), n, x, 1, y, 1, result);
+    cublasDnrm2(cublas_handle(), n, x.device_data(), 1, &result);
 
     return result;
 }

@@ -1,4 +1,4 @@
-CXX=CC
+CXX=g++
 CUDA=nvcc
 CXXFLAGS=-O3 -fopenmp
 CUDAFLAGS=-O3 -std=c++11 -arch=sm_60

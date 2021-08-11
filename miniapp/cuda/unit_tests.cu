@@ -79,6 +79,9 @@ bool test_axpy() {
     linalg::ss_axpy(y, 0.5, x);
     y.update_host();
 
+    for(int i=0;i<n;i++) std::cout << x.host_data()[i] << " ,";
+    std::cout << "\n";
+
     bool status = true;
     for(auto i=0; i<n; ++i) {
         status = status && check_value(y[i], (0.5*3.0 + 5.0), 1.e-13);
