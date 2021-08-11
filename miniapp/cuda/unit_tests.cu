@@ -68,6 +68,7 @@ bool test_axpy() {
     auto n = 5;
     Field x(n,1);
     Field y(n,1);
+    std::cout << "done";
 
     for(auto i=0; i<n; ++i) {
         x[i] = 3.0;
