@@ -61,7 +61,8 @@ namespace kernels {
         //                          + U(i,j-1) + U(i,j+1) // north and south
         //                          + alpha * x_old(i,j)
         //                          + dxs * U(i,j) * (1.0 - U(i,j));
-        auto j = threadIdx.x + blockDim.x*blockIdx.x;
+        auto i = threadIdx.x + blockDim.x*blockIdx.x;
+        auto j = threadIdx.y + blockDim.y*blockIdx.y;
 
         auto nx = params.nx;
         auto ny = params.ny;
@@ -72,22 +73,19 @@ namespace kernels {
             return i + j * nx;
         };
 
-        if(j>0 && j<ny) {
-
-            for(int i=0; i<nx; i++) {
-                auto pos = find_pos(i, j);
-                S[pos] = -(4. + alpha) * U[pos]
-                            + U[pos-1] + U[pos-nx] + U[pos+nx]
-                            + alpha*params.x_old[pos] + U[pos+1]
-                            + dxs * U[pos] * (1.0 - U[pos]);
+        if(i>0 && i<nx && j>0 && j<ny) {
+            auto pos = find_pos(i, j);
+            S[pos] = -(4. + alpha) * U[pos]
+                        + U[pos-1] + U[pos-nx] + U[pos+nx]
+                        + alpha*params.x_old[pos] + U[pos+1]
+                        + dxs * U[pos] * (1.0 - U[pos]);
             }
-
-        }
     }
 
     __global__
     void stencil_east_west(double* S, const double *U) {
-        auto j = threadIdx.x + blockDim.x*blockIdx.x;
+        auto i = threadIdx.x + blockDim.x*blockIdx.x;
+        auto j = threadIdx.y + blockDim.y*blockIdx.y;
 
         auto nx = params.nx;
         auto ny = params.ny;
@@ -229,9 +227,15 @@ void diffusion(data::Field const& U, data::Field &S)
         return (n+block_dim-1)/block_dim;
     };
 
+    dim3 block_dim(16,16);
+    dim3 grid_dim(
+            calculate_grid_dim(nx,block_dim.x),
+            calculate_grid_dim(ny,block_dim.y));
+
     // TODO: apply stencil to the interior grid points
-    auto int_grid_dim = calculate_grid_dim(ny, 64);
-    kernels::stencil_interior<<<int_grid_dim, 64>>>(S.device_data(), U.device_data());
+    // auto int_grid_dim = calculate_grid_dim(ny, 64);
+    // kernels::stencil_interior<<<int_grid_dim, 64>>>(S.device_data(), U.device_data());
+    kernels::stencil_interior<<<grid_dim,block_dim>>>(S.device_data(), U.device_data());
     cudaDeviceSynchronize();    // TODO: remove after debugging
     cuda_check_last_kernel("internal kernel"); // TODO: remove after debugging
 
