@@ -6,6 +6,7 @@
 // implements
 // *****************************************
 
+
 // Description: Contains simple operators which can be used on 3d-meshes
 
 #include "cuda_helpers.h"
