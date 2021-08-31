@@ -28,16 +28,15 @@ void diffusion(double *x0, double *x1, int nx, int ny, double dt) {
 //                   + x0[i-1,j] + x0[i+1,j]);
 //    }
 //  }
-    auto i = threadIdx.x + blockDim.x*blockIdx.x;
-    auto j = threadIdx.y + blockDim.y*blockIdx.y;
-    size_t pos;
+    auto i = threadIdx.x + blockDim.x*blockIdx.x + 1;
+    auto j = threadIdx.y + blockDim.y*blockIdx.y + 1;
 
-    if(i<nx && j<ny)
+    if(i<nx-1 && j<ny-1)
     {
-       pos = i+j*nx;
-       x1[pos] = x0[pos] + dt * (-4.*x0[pos]
-                  + x0[pos-nx] + x0[pos+nx]
-                  + x0[pos-1] + x0[pos+1]);
+       int pos = i+j*nx;
+       x1[pos] = x0[pos]    + dt * (-4.*x0[pos]
+               + x0[pos-nx] + x0[pos+nx]
+               + x0[pos-1]  + x0[pos+1]);
     }
 }
 
@@ -80,10 +79,15 @@ int main(int argc, char** argv) {
     auto start_event = stream.enqueue_event();
 
     // time stepping loop
+    dim3 block_dim(16,16);
+    int nbx = (nx-2 + block_dim.x - 1)/block_dim.x;
+    int nby = (ny-2 + block_dim.y - 1)/block_dim.y;
+    dim3 grid_dim(nbx,nby);
+
     for(auto step=0; step<nsteps; ++step) {
         // TODO: launch the diffusion kernel in 2D
-
-        std::swap(x0, x1);
+        diffusion<<<grid_dim,block_dim>>>(x0,x1,nx,ny,dt);
+        std::swap(x0,x1);
     }
     auto stop_event = stream.enqueue_event();
     stop_event.wait();
