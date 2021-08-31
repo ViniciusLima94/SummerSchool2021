@@ -28,6 +28,17 @@ void diffusion(double *x0, double *x1, int nx, int ny, double dt) {
 //                   + x0[i-1,j] + x0[i+1,j]);
 //    }
 //  }
+    auto i = threadIdx.x + blockDim.x*blockIdx.x;
+    auto j = threadIdx.y + blockDim.y*blockIdx.y;
+    size_t pos;
+
+    if(i<nx && j<ny)
+    {
+       pos = i+j*nx;
+       x1[pos] = x0[pos] + dt * (-4.*x0[pos]
+                  + x0[pos-nx] + x0[pos+nx]
+                  + x0[pos-1] + x0[pos+1]);
+    }
 }
 
 int main(int argc, char** argv) {
