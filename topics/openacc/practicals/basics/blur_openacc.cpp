@@ -52,11 +52,13 @@ void blur_twice_gpu_naive(double *in , double *out , int n, int nsteps)
 
     for (auto istep = 0; istep < nsteps; ++istep) {
         // TODO: Offload the following loop to the GPU
+        #pragma acc  parallel loop gang worker vector copyin(in[0:n]) copyout(buffer[0:n]) 
         for (auto i = 1; i < n-1; ++i) {
             buffer[i] = blur(i, in);
         }
 
         // TODO: Offload the following loop to the GPU
+        #pragma acc  parallel loop gang worker vector copyin(buffer[0:n]) copyout(out[0:n]) 
         for (auto i = 2; i < n-2; ++i) {
             out[i] = blur(i, buffer);
         }

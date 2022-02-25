@@ -4,7 +4,7 @@
 #include <cmath>
 #include <mutex>
 
-#ifndef NO_CUDA
+#ifndef  NO_CUDA
 #include <cublas_v2.h>
 #include <cuda_profiler_api.h>
 

@@ -22,7 +22,7 @@ ifeq ($(PE_ENV), PGI)
 	FC  = pgf90
 	CXXFLAGS = -DPGI -std=c++11 -O3 -acc -Minfo=accel -ta=tesla:pinned
 	FCFLAGS  = -O3 -acc -Minfo=accel -ta=tesla:pinned
-	LDFLAGS += -L$(CRAY_CUDATOOLKIT_DIR)/lib64 -lcudart
+	LDFLAGS += -L$(CRAY_CUDATOOLKIT_DIR)/lib64 -lcudart 
 endif
 
 ifeq ($(PE_ENV), GNU)
@@ -31,7 +31,7 @@ ifeq ($(PE_ENV), GNU)
 	FC  = gfortran
 	CXXFLAGS = -std=c++11 -O3 -fopenmp -fopenacc -I$(CRAY_CUDATOOLKIT_DIR)/include
 	FCFLAGS  = -O3 -fopenacc -fopenmp
-	LDFLAGS += -L$(CRAY_CUDATOOLKIT_DIR)/lib64 -lcudart
+	LDFLAGS += -L$(CRAY_CUDATOOLKIT_DIR)/lib64 -lcudart 
 endif
 
 OPENACC_BENCHMARKS= axpy.openacc axpy.openacc.fort
